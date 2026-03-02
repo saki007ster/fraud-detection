@@ -113,6 +113,15 @@ Now that the servers are up, we need to load our Databricks notebooks into the D
 
 1.  **Log into Databricks CLI:**
     You'll need a Personal Access Token from your new Databricks Workspace URL (which was in your Terraform outputs).
+
+    **How to generate a Databricks Personal Access Token:**
+    1. Open your Databricks Workspace URL in your browser and log in with Azure.
+    2. In the top-right corner, click your profile icon/username and select **Settings**.
+    3. Click on **Developer** in the left sidebar.
+    4. Next to "Access tokens", click **Manage**, then click **Generate new token**.
+    5. Give it a comment and click Generate. **Copy the token immediately!**
+
+    Now use it to log into the CLI:
     ```bash
     databricks configure --token
     # Enter the Workspace URL and Token when prompted
@@ -122,11 +131,18 @@ Now that the servers are up, we need to load our Databricks notebooks into the D
     This copies all the Python scripts in `databricks/notebooks` directly into the cloud.
     ```bash
     cd ../
-    databricks workspace import_dir databricks/notebooks /Shared/fraud-detection/notebooks
+    databricks workspace import-dir databricks/notebooks /Shared/fraud-detection/notebooks
     ```
 
 3.  **Upload the Data:**
-    Our Pipeline expects raw data to live in the new Azure Storage Account (`raw` container). Use `azcopy` or the Azure Portal to upload the Kaggle Credit Card CSV into that container.
+    Our Pipeline expects raw data to live in the new Azure Storage Account (`raw` container). 
+    
+    The easiest way to do this is via the Azure Portal UI:
+    1. Log into [portal.azure.com](https://portal.azure.com).
+    2. Search for the storage account created by Terraform (e.g., `stfraudagentdev3kync`).
+    3. On the left menu, click **Storage browser** -> **Blob containers**.
+    4. Click on the `raw` container.
+    5. Click the **Upload** button at the top and upload the `creditcard.csv` Kaggle dataset.
 
 4.  **Configure and Run the Job Pipeline:**
     We wrote an automated sequence script called `fraud_pipeline.yml`. 

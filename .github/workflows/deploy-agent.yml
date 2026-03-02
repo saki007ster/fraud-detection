@@ -74,6 +74,5 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Restart Azure Web App
-        # Assume standard naming convention matching Terraform
         run: |
-          az webapp restart --name app-fraudagentprod --resource-group rg-fraudagentprod
+          az webapp restart --name app-fraudagentdev3 --resource-group rg-fraudagentdev3

@@ -119,7 +119,7 @@ resource "azurerm_linux_web_app" "agent_app" {
   site_config {
     always_on = true
     application_stack {
-      docker_image_name   = "fraud-agent:latest"
+      docker_image_name   = "saki007ster/fraud-agent:latest"
       docker_registry_url = "https://ghcr.io" # Assuming GitHub Container Registry (placeholder)
     }
   }
