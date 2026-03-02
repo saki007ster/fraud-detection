@@ -1,0 +1,15 @@
+# Core
+fastapi>=0.104.0,<1.0
+uvicorn[standard]>=0.24.0,<1.0
+pydantic>=2.5.0,<3.0
+
+# Azure
+azure-identity>=1.15.0,<2.0
+azure-keyvault-secrets>=4.7.0,<5.0
+azure-storage-blob>=12.19.0,<13.0
+
+# LLM client (Azure AI Foundry / OpenAI-compatible)
+openai>=1.6.0,<2.0
+
+# Observability
+python-json-logger>=2.0.0,<3.0

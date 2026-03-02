@@ -1,0 +1,72 @@
+# Fraud Detection Pipeline - Databricks Job Config
+# This defines the data engineering and verification pipeline
+
+resources:
+  jobs:
+    fraud_detection_pipeline:
+      name: "[PROD] Fraud Detection - Medallion Pipeline & Eval"
+      description: "Extracts Kaggle/Synthetic data, enriches, builds ML features, and runs Agent harness eval."
+      schedule:
+        quartz_cron_expression: "0 0 2 * * ?"
+        timezone_id: "UTC"
+      job_clusters:
+        - job_cluster_key: "default_job_cluster"
+          new_cluster:
+            spark_version: "14.3.x-scala2.12"
+            node_type_id: "Standard_DS3_v2"
+            autoscale:
+              min_workers: 1
+              max_workers: 4
+            # IMPORTANT: Aggressive auto-termination as per Cost Guardrails
+            autotermination_minutes: 10
+      tasks:
+        - task_key: "01_download_or_mount_data"
+          notebook_task:
+            notebook_path: "../notebooks/01_download_or_mount_data.py"
+          job_cluster_key: "default_job_cluster"
+
+        - task_key: "02_bronze_ingest"
+          depends_on:
+            - task_key: "01_download_or_mount_data"
+          notebook_task:
+            notebook_path: "../notebooks/02_bronze_ingest.py"
+          job_cluster_key: "default_job_cluster"
+
+        - task_key: "03_silver_clean"
+          depends_on:
+            - task_key: "02_bronze_ingest"
+          notebook_task:
+            notebook_path: "../notebooks/03_silver_clean.py"
+          job_cluster_key: "default_job_cluster"
+
+        - task_key: "04_gold_features"
+          depends_on:
+            - task_key: "03_silver_clean"
+          notebook_task:
+            notebook_path: "../notebooks/04_gold_features.py"
+          job_cluster_key: "default_job_cluster"
+
+        - task_key: "05_eval_baseline"
+          depends_on:
+            - task_key: "04_gold_features"
+          notebook_task:
+            notebook_path: "../notebooks/05_eval_baseline.py"
+          job_cluster_key: "default_job_cluster"
+
+        - task_key: "06_ingest_synthetic"
+          depends_on:
+            - task_key: "04_gold_features"
+          notebook_task:
+            notebook_path: "../notebooks/06_ingest_synthetic.py"
+          job_cluster_key: "default_job_cluster"
+
+        - task_key: "07_batch_verification"
+          depends_on:
+            - task_key: "05_eval_baseline"
+            - task_key: "06_ingest_synthetic"
+          notebook_task:
+            notebook_path: "../notebooks/07_batch_verification.py"
+            # In production, pass the Azure App Service URL here
+            base_parameters:
+              agent_url: "https://fraud-agent-prod.azurewebsites.net/analyze-transaction"
+          job_cluster_key: "default_job_cluster"

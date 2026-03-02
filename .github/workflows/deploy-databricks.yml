@@ -1,0 +1,10 @@
+# TODO (Prompt 6): Databricks deployment workflow
+# name: Deploy Databricks
+# on:
+#   push:
+#     branches: [main]
+#     paths: ['databricks/**']
+# jobs:
+#   deploy:
+#     - deploy notebooks via Databricks CLI
+#     - trigger smoke run of baseline pipeline
