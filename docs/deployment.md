@@ -100,7 +100,10 @@ Our AI Agent isn't just a script; it's a web API built with FastAPI. We need to 
     ```
     
     **Tell Azure to Use It:**
-    The GitHub Actions deployment pipeline (`.github/workflows/deploy-agent.yml`) will automatically handle pushing new code every time you make a git commit to the main branch, but on your first setup, you tell the Azure Web App to restart to pull the new container image.
+    The GitHub Actions deployment pipeline (`.github/workflows/deploy-agent.yml`) will automatically handle pushing new code every time you make a git commit to the main branch. However, for this very first setup, you need to manually tell the Azure Web App to restart to pull the image you just pushed:
+    ```bash
+    az webapp restart --name app-fraudagentdev3 --resource-group rg-fraudagentdev3
+    ```
 
 ---
 
