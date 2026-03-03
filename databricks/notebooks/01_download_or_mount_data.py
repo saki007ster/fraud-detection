@@ -36,7 +36,7 @@
 # Config — adjust for your environment
 STORAGE_ACCOUNT = dbutils.widgets.get("storage_account") if "dbutils" in dir() else "frauddetectionadls"
 RAW_CONTAINER = "raw"
-RAW_PATH = f"abfss://{RAW_CONTAINER}@{STORAGE_ACCOUNT}.dfs.core.windows.net/creditcardfraud/creditcard.csv"
+RAW_PATH = f"abfss://{RAW_CONTAINER}@{STORAGE_ACCOUNT}.dfs.core.windows.net/creditcard.csv"
 
 # Local fallback for development without ADLS
 USE_LOCAL_FILE = False

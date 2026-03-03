@@ -6,6 +6,9 @@ resources:
     fraud_detection_pipeline:
       name: "[PROD] Fraud Detection - Medallion Pipeline & Eval"
       description: "Extracts Kaggle/Synthetic data, enriches, builds ML features, and runs Agent harness eval."
+      parameters:
+        - name: "storage_account"
+          default: "stfraudagentdev3kync"
       schedule:
         quartz_cron_expression: "0 0 2 * * ?"
         timezone_id: "UTC"
@@ -13,47 +16,52 @@ resources:
         - job_cluster_key: "default_job_cluster"
           new_cluster:
             spark_version: "14.3.x-scala2.12"
-            node_type_id: "Standard_DS2_v2"
-            num_workers: 1
+            node_type_id: "Standard_D4s_v3"
+            num_workers: 0
+            custom_tags:
+              ResourceClass: "SingleNode"
+            spark_conf:
+              "spark.databricks.cluster.profile": "singleNode"
+              "spark.master": "local[*]"
       tasks:
         - task_key: "01_download_or_mount_data"
           notebook_task:
-            notebook_path: "/Shared/fraud-detection/notebooks/01_download_or_mount_data.py"
+            notebook_path: "/Workspace/Shared/fraud-detection/notebooks/01_download_or_mount_data"
           job_cluster_key: "default_job_cluster"
 
         - task_key: "02_bronze_ingest"
           depends_on:
             - task_key: "01_download_or_mount_data"
           notebook_task:
-            notebook_path: "/Shared/fraud-detection/notebooks/02_bronze_ingest.py"
+            notebook_path: "/Workspace/Shared/fraud-detection/notebooks/02_bronze_ingest"
           job_cluster_key: "default_job_cluster"
 
         - task_key: "03_silver_clean"
           depends_on:
             - task_key: "02_bronze_ingest"
           notebook_task:
-            notebook_path: "/Shared/fraud-detection/notebooks/03_silver_clean.py"
+            notebook_path: "/Workspace/Shared/fraud-detection/notebooks/03_silver_clean"
           job_cluster_key: "default_job_cluster"
 
         - task_key: "04_gold_features"
           depends_on:
             - task_key: "03_silver_clean"
           notebook_task:
-            notebook_path: "/Shared/fraud-detection/notebooks/04_gold_features.py"
+            notebook_path: "/Workspace/Shared/fraud-detection/notebooks/04_gold_features"
           job_cluster_key: "default_job_cluster"
 
         - task_key: "05_eval_baseline"
           depends_on:
             - task_key: "04_gold_features"
           notebook_task:
-            notebook_path: "/Shared/fraud-detection/notebooks/05_eval_baseline.py"
+            notebook_path: "/Workspace/Shared/fraud-detection/notebooks/05_eval_baseline"
           job_cluster_key: "default_job_cluster"
 
         - task_key: "06_ingest_synthetic"
           depends_on:
             - task_key: "04_gold_features"
           notebook_task:
-            notebook_path: "/Shared/fraud-detection/notebooks/06_ingest_synthetic.py"
+            notebook_path: "/Workspace/Shared/fraud-detection/notebooks/06_ingest_synthetic"
           job_cluster_key: "default_job_cluster"
 
         - task_key: "07_batch_verification"
@@ -61,7 +69,7 @@ resources:
             - task_key: "05_eval_baseline"
             - task_key: "06_ingest_synthetic"
           notebook_task:
-            notebook_path: "/Shared/fraud-detection/notebooks/07_batch_verification.py"
+            notebook_path: "/Workspace/Shared/fraud-detection/notebooks/07_batch_verification"
             # In production, pass the Azure App Service URL here
             base_parameters:
               agent_url: "https://fraud-agent-prod.azurewebsites.net/analyze-transaction"
