@@ -20,6 +20,15 @@ resource "azurerm_user_assigned_identity" "agent_identity" {
   location            = azurerm_resource_group.main.location
 }
 
+resource "azurerm_federated_identity_credential" "github_actions" {
+  name                = "gh-actions-${local.suffix}"
+  resource_group_name = azurerm_resource_group.main.name
+  audience            = ["api://AzureADTokenExchange"]
+  issuer              = "https://token.actions.githubusercontent.com"
+  parent_id           = azurerm_user_assigned_identity.agent_identity.id
+  subject             = "repo:saki007ster/fraud-detection:environment:production"
+}
+
 # ─────────────────────────────────────────────────────────────
 # 2. Key Vault (Secrets Management)
 # ─────────────────────────────────────────────────────────────
@@ -133,6 +142,13 @@ resource "azurerm_linux_web_app" "agent_app" {
     "ADLS_CONNECTION_STRING" = azurerm_storage_account.sa.primary_connection_string
     "CORS_ORIGINS"           = "*"
   }
+}
+
+# Give the App Service Identity 'Website Contributor' so GitHub Actions can trigger restarts
+resource "azurerm_role_assignment" "app_contributor" {
+  scope                = azurerm_linux_web_app.agent_app.id
+  role_definition_name = "Website Contributor"
+  principal_id         = azurerm_user_assigned_identity.agent_identity.principal_id
 }
 
 # ─────────────────────────────────────────────────────────────
