@@ -22,7 +22,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Install Databricks CLI
-        uses: databricks/setup-cli@v0.222.1
+        uses: databricks/setup-cli@main
 
       - name: Deploy Databricks Asset Bundle (PROD)
         env:
