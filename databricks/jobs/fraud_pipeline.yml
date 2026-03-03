@@ -26,42 +26,42 @@ resources:
       tasks:
         - task_key: "01_download_or_mount_data"
           notebook_task:
-            notebook_path: "/Workspace/Shared/fraud-detection/notebooks/01_download_or_mount_data"
+            notebook_path: "../notebooks/01_download_or_mount_data.py"
           job_cluster_key: "default_job_cluster"
 
         - task_key: "02_bronze_ingest"
           depends_on:
             - task_key: "01_download_or_mount_data"
           notebook_task:
-            notebook_path: "/Workspace/Shared/fraud-detection/notebooks/02_bronze_ingest"
+            notebook_path: "../notebooks/02_bronze_ingest.py"
           job_cluster_key: "default_job_cluster"
 
         - task_key: "03_silver_clean"
           depends_on:
             - task_key: "02_bronze_ingest"
           notebook_task:
-            notebook_path: "/Workspace/Shared/fraud-detection/notebooks/03_silver_clean"
+            notebook_path: "../notebooks/03_silver_clean.py"
           job_cluster_key: "default_job_cluster"
 
         - task_key: "04_gold_features"
           depends_on:
             - task_key: "03_silver_clean"
           notebook_task:
-            notebook_path: "/Workspace/Shared/fraud-detection/notebooks/04_gold_features"
+            notebook_path: "../notebooks/04_gold_features.py"
           job_cluster_key: "default_job_cluster"
 
         - task_key: "05_eval_baseline"
           depends_on:
             - task_key: "04_gold_features"
           notebook_task:
-            notebook_path: "/Workspace/Shared/fraud-detection/notebooks/05_eval_baseline"
+            notebook_path: "../notebooks/05_eval_baseline.py"
           job_cluster_key: "default_job_cluster"
 
         - task_key: "06_ingest_synthetic"
           depends_on:
             - task_key: "04_gold_features"
           notebook_task:
-            notebook_path: "/Workspace/Shared/fraud-detection/notebooks/06_ingest_synthetic"
+            notebook_path: "../notebooks/06_ingest_synthetic.py"
           job_cluster_key: "default_job_cluster"
 
         - task_key: "07_batch_verification"
@@ -69,7 +69,7 @@ resources:
             - task_key: "05_eval_baseline"
             - task_key: "06_ingest_synthetic"
           notebook_task:
-            notebook_path: "/Workspace/Shared/fraud-detection/notebooks/07_batch_verification"
+            notebook_path: "../notebooks/07_batch_verification.py"
             # In production, pass the Azure App Service URL here
             base_parameters:
               agent_url: "https://fraud-agent-prod.azurewebsites.net/analyze-transaction"

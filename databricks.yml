@@ -1,0 +1,22 @@
+bundle:
+  name: fraud-detection-bundle
+
+workspace:
+  host: ${workspace.host}
+
+# Include the Databricks Jobs defined in YAML
+include:
+  - databricks/jobs/*.yml
+
+# Environments
+targets:
+  dev:
+    default: true
+    workspace:
+      host: https://adb-7405614654084441.1.azuredatabricks.net
+      root_path: /Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+  
+  prod:
+    workspace:
+      host: https://adb-7405614654084441.1.azuredatabricks.net
+      root_path: /Shared/.bundle/${bundle.name}/${bundle.target}
